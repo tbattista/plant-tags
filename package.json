@@ -1,0 +1,31 @@
+{
+  "name": "plant-tags",
+  "version": "1.0.0",
+  "description": "3D-printed NFC plant tags: a black holder and a four-colour button with the plant drawn on it. Library + the public tool at riverpointlabs.co.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./thumbs/*": "./thumbs/*"
+  },
+  "files": [
+    "src",
+    "samples",
+    "icons",
+    "thumbs"
+  ],
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "test": "node --test --test-concurrency=1 \"test/*.test.js\"",
+    "art": "python3 tools/build.py && node tools/thumbs.mjs"
+  },
+  "dependencies": {
+    "express": "5.2.1",
+    "manifold-3d": "3.5.1",
+    "sharp": "0.35.5"
+  },
+  "license": "UNLICENSED"
+}

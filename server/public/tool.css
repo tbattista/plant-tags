@@ -1,0 +1,37 @@
+/* Plant Tag Maker — on top of the Riverpoint Labs site styles. */
+.pt-bar { background: #fff; border-bottom: 1px solid rgba(0, 0, 0, .08); padding: .75rem 0; }
+.pt-bar-link { font-size: .9rem; font-weight: 700; text-decoration: none; }
+.pt-card { background: #fff; border: 1px solid rgba(0, 0, 0, .08); border-radius: .5rem; padding: 1.25rem; }
+.pt-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; }
+.pt-card .form-label { font-size: .8rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--bs-gray); margin-bottom: .25rem; }
+.pt-hint { text-transform: none; font-weight: 400; letter-spacing: 0; }
+.pt-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(88px, 1fr)); gap: .5rem; max-height: 22rem; overflow-y: auto; padding: .15rem; }
+.pt-tile { display: flex; flex-direction: column; align-items: center; gap: .25rem; padding: .4rem; border: 2px solid transparent; border-radius: .5rem; background: #f7f6f2; font-size: .75rem; line-height: 1.2; text-align: center; color: inherit; cursor: pointer; }
+.pt-tile img { width: 72px; height: 72px; object-fit: cover; border-radius: 50%; }
+.pt-tile:hover { border-color: rgba(0, 0, 0, .15); }
+.pt-tile[aria-pressed="true"] { border-color: #212529; background: #fff; }
+.pt-tile:disabled { opacity: .5; cursor: default; }
+.pt-preview { display: flex; justify-content: center; }
+.pt-preview img { width: min(300px, 100%); height: auto; aspect-ratio: 1; border-radius: 50%; background: #f7f6f2; }
+.pt-preview img.pt-loading { opacity: .4; }
+.pt-sticky { position: sticky; top: 1rem; }
+.pt-sorry { background: #fff7e6; border: 1px solid #f1d39b; border-radius: .5rem; padding: 1rem; }
+.pt-sorry-title { font-weight: 700; margin-bottom: .25rem; }
+.pt-notify .form-label { text-transform: none; letter-spacing: 0; font-size: .9rem; color: inherit; }
+.pt-hp { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+.pt-pic-now { display: flex; align-items: center; gap: .75rem; font-size: .9rem; }
+.pt-pic-now img { width: 56px; height: 56px; object-fit: cover; border-radius: .35rem; }
+.pt-progress { background: #f7f6f2; border-radius: .5rem; padding: .75rem 1rem; }
+.pt-steps { padding-left: 1.1rem; }
+.pt-steps .now { font-weight: 700; }
+.pt-error { color: #b02a37; min-height: 1em; }
+.pt-swatches { list-style: none; padding: 0; }
+.pt-swatches li { display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem; }
+.pt-sw { width: 1.1rem; height: 1.1rem; border-radius: 50%; border: 1px solid rgba(0, 0, 0, .2); flex: none; }
+.pt-sw-beige { background: #f4f1ea; }
+.pt-sw-navy { background: #1d3446; }
+.pt-sw-green { background: #5a9a52; }
+.pt-sw-brick { background: #b8472b; }
+.pt-sw-black { background: #16191c; }
+.pt-howto li { margin-bottom: .4rem; }
+@media (max-width: 991px) { .pt-sticky { position: static; } }

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Plant Tag Maker | Riverpoint Labs</title>
+  <meta name="description" content="Make a 3D-printed NFC plant tag: a black stake with a four-colour button of your plant. Pick a drawing or have AI draw it from a photo, then download the print files.">
+  <meta name="author" content="Tom Battista">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://riverpointlabs.co/style.css">
+  <link rel="stylesheet" href="https://riverpointlabs.co/css/lab.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/tool.css">
+  <link rel="icon" type="image/png" href="https://riverpointlabs.co/images/branding/favicon-32.png">
+</head>
+<body class="bg-body">
+  <header class="pt-bar">
+    <div class="container d-flex align-items-center gap-3">
+      <a href="https://riverpointlabs.co/"><img src="https://riverpointlabs.co/images/branding/main-logo.png" alt="Riverpoint Labs" height="34"></a>
+      <span class="flex-grow-1"></span>
+      <a class="pt-bar-link" href="https://riverpointlabs.co/tools/">← All tools</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="my-5">
+      <div class="section-header mb-4">
+        <span class="text-muted text-uppercase">3D printing tool</span>
+        <h1 class="display-1">Plant Tag Maker</h1>
+        <p class="lead col-lg-9">A black holder that goes in the pot and a 30 mm four-colour button with your plant on it. The button presses in over a 25 mm NFC sticker, so a tap with a phone opens whatever you write to it. Pick a drawing, or have the AI draw your plant from a photo, then download the files for Creality Print.</p>
+      </div>
+
+      <div class="row g-4">
+        <div class="col-lg-7 order-2 order-lg-1">
+          <div class="pt-card">
+            <h3>1. What plant is it?</h3>
+            <div class="row g-2">
+              <div class="col-sm-6">
+                <label class="form-label" for="pt-name">Name on the tag</label>
+                <input class="form-control" id="pt-name" maxlength="60" placeholder="Monstera" autocomplete="off">
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label" for="pt-species">Botanical name <span class="pt-hint">(optional, helps the AI)</span></label>
+                <input class="form-control" id="pt-species" maxlength="120" placeholder="Monstera deliciosa" autocomplete="off">
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-card mt-4">
+            <h3>2. Pick a drawing</h3>
+            <p class="small text-muted mb-2">The closest match to the name comes first.</p>
+            <div class="pt-grid" id="pt-starters" role="list"></div>
+          </div>
+
+          <div class="pt-card mt-4" id="pt-ai">
+            <h3>Or have the AI draw it</h3>
+            <div id="pt-ai-off" class="pt-sorry" hidden>
+              <p class="pt-sorry-title" id="pt-sorry-title">Sorry — the AI is out of money for today.</p>
+              <p class="small mb-2" id="pt-sorry-text">AI drawing runs on a small daily budget while it’s in beta. It comes back tomorrow; the starter drawings work any time.</p>
+              <form id="pt-notify" class="pt-notify" autocomplete="on">
+                <label class="form-label" for="pt-email">Get an email when AI drawing is open to everyone</label>
+                <div class="d-flex gap-2">
+                  <input class="form-control" id="pt-email" name="email" type="email" required placeholder="you@example.com" autocomplete="email">
+                  <input class="pt-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+                  <button class="btn btn-dark text-nowrap" type="submit">Notify me</button>
+                </div>
+                <p class="small mt-2 mb-0" id="pt-notify-msg" role="status"></p>
+              </form>
+            </div>
+            <div id="pt-ai-on" hidden>
+              <p class="small text-muted">It draws from a photo — yours, or one of the kind from iNaturalist — in the same style as the starters, checks how it prints and fixes it once. One to three minutes. <span id="pt-ai-left"></span></p>
+              <div class="pt-pic" id="pt-pic">
+                <div class="pt-pic-now" id="pt-pic-now">No photo chosen: it uses the first iNaturalist photo for the name.</div>
+                <div class="d-flex flex-wrap gap-2 mt-2">
+                  <label class="btn btn-outline-dark btn-sm mb-0" for="pt-upload">Use my photo</label>
+                  <input type="file" id="pt-upload" accept="image/*" hidden>
+                  <button class="btn btn-outline-dark btn-sm" type="button" id="pt-search-btn">Search plant photos</button>
+                  <button class="btn btn-link btn-sm" type="button" id="pt-pic-clear" hidden>Clear</button>
+                </div>
+                <div class="pt-grid mt-2" id="pt-results" role="list" hidden></div>
+              </div>
+              <button class="btn btn-dark mt-3" type="button" id="pt-draw">Draw it with AI</button>
+            </div>
+            <div class="pt-progress mt-3" id="pt-progress" hidden aria-live="polite">
+              <div class="d-flex align-items-center gap-2"><span class="spinner-border spinner-border-sm" aria-hidden="true"></span><strong id="pt-progress-title">The AI is drawing</strong><span class="ms-auto small text-muted" id="pt-time">0:00</span></div>
+              <ol class="pt-steps small mt-2 mb-0" id="pt-steps"></ol>
+            </div>
+            <p class="pt-error small mt-2 mb-0" id="pt-ai-error" role="alert"></p>
+          </div>
+        </div>
+
+        <div class="col-lg-5 order-1 order-lg-2">
+          <div class="pt-card pt-sticky">
+            <h3>Your button</h3>
+            <div class="pt-preview"><img id="pt-preview" alt="The button as it will print, in its black cup" width="300" height="300"></div>
+            <p class="small text-muted text-center mb-3" id="pt-preview-note">Shown as it prints: four filament colours, in its black cup.</p>
+            <form id="pt-edit" class="mb-3" hidden>
+              <label class="form-label" for="pt-instruction">Change it with AI</label>
+              <div class="d-flex gap-2">
+                <input class="form-control" id="pt-instruction" maxlength="400" placeholder="make the leaves wider" autocomplete="off">
+                <button class="btn btn-outline-dark" type="submit">Change</button>
+              </div>
+            </form>
+            <button class="btn btn-dark w-100" type="button" id="pt-download">Download print files</button>
+            <p class="pt-error small mt-2 mb-0" id="pt-error" role="alert"></p>
+            <p class="small text-muted mt-3 mb-0">First tag? Print the <a href="/fit-test.3mf">fit test</a> once to check the button clicks in snugly.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-4 mt-1">
+        <div class="col-lg-6">
+          <div class="pt-card h-100">
+            <h3>Filaments</h3>
+            <ul class="pt-swatches small mb-0">
+              <li><span class="pt-sw pt-sw-beige"></span><b>Filament 1</b> · background (beige)</li>
+              <li><span class="pt-sw pt-sw-navy"></span><b>Filament 2</b> · outlines (navy)</li>
+              <li><span class="pt-sw pt-sw-green"></span><b>Filament 3</b> · leaves (green)</li>
+              <li><span class="pt-sw pt-sw-brick"></span><b>Filament 4</b> · pot and flowers (brick red)</li>
+              <li><span class="pt-sw pt-sw-black"></span><b>Holder</b> · black, printed on its own</li>
+            </ul>
+            <p class="small text-muted mt-2 mb-0">Made for Overture Matte PLA; any four colours work.</p>
+          </div>
+        </div>
+        <div class="col-lg-6">
+          <div class="pt-card h-100">
+            <h3>Print and put it together</h3>
+            <ol class="small mb-0 pt-howto">
+              <li>In Creality Print use <b>File → Import (Ctrl+I)</b>, not Open Project — importing keeps each colour on its own filament.</li>
+              <li><b>button.3mf</b>: four colours, face-down, 0.2 mm layers, no supports.</li>
+              <li>Pick a holder from <b>holders/</b>: a tall stake, a short stake, or flat on the soil — each also with a “tap here” icon.</li>
+              <li>Press a 25 mm NFC sticker into the pocket in the cup, line the button’s notch up with the bump, and press it in. A drop of clear epoxy over it makes it permanent.</li>
+              <li>Write the sticker with any NFC app (NFC Tools, or Chrome on Android) — it writes through the button.</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <p class="small text-muted mt-4">“Tap here” icon: “NFC Phone” by Andrew Forrester, the Noun Project (CC BY 3.0). Reference photos from iNaturalist, credited to their photographers. Part of <a href="https://riverpointlabs.co/tools/">Riverpoint Labs tools</a>.</p>
+    </section>
+  </main>
+  <script src="/tool.js" defer></script>
+</body>
+</html>

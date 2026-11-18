@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600"><title>Houseplant</title><rect width="500" height="600" fill="#f4f1ea"/><g transform="translate(-6 30)"><g transform="translate(256 262) scale(1.18) translate(-256 -262)" stroke="#1d3446" stroke-width="9" stroke-linejoin="round" stroke-linecap="round">
+    
+    <g transform="translate(256 286)">
+      <g transform="rotate(-62)">
+        <path d="M0 -8 C -34 -40 -34 -96 0 -128 C 34 -96 34 -40 0 -8 Z" fill="#3f7a46"/>
+        <path d="M0 -14 L0 -110" fill="none" stroke-width="6"/>
+      </g>
+      <g transform="rotate(62)">
+        <path d="M0 -8 C -34 -40 -34 -96 0 -128 C 34 -96 34 -40 0 -8 Z" fill="#3f7a46"/>
+        <path d="M0 -14 L0 -110" fill="none" stroke-width="6"/>
+      </g>
+      <g transform="rotate(-28)">
+        <path d="M0 -6 C -44 -52 -44 -130 0 -170 C 44 -130 44 -52 0 -6 Z" fill="#5a9a52"/>
+        <path d="M0 -14 L0 -150" fill="none" stroke-width="6"/>
+      </g>
+      <g transform="rotate(28)">
+        <path d="M0 -6 C -44 -52 -44 -130 0 -170 C 44 -130 44 -52 0 -6 Z" fill="#5a9a52"/>
+        <path d="M0 -14 L0 -150" fill="none" stroke-width="6"/>
+      </g>
+      <g>
+        <path d="M0 -4 C -48 -60 -48 -150 0 -196 C 48 -150 48 -60 0 -4 Z" fill="#6cad5f"/>
+        <path d="M0 -12 L0 -176" fill="none" stroke-width="6"/>
+      </g>
+    </g>
+    
+    <path d="M170 318 L342 318 L322 410 L190 410 Z" fill="#b8472b"/>
+    <path d="M186 342 L326 342" fill="none" stroke="#d9734f" stroke-width="7" opacity="0.9"/>
+    <rect x="152" y="280" width="208" height="40" rx="6" fill="#c9553a"/>
+    <path d="M166 292 L250 292" fill="none" stroke="#e08a63" stroke-width="7"/>
+    
+    <path d="M150 412 L362 412" fill="none" stroke-width="10"/>
+  </g></g></svg>

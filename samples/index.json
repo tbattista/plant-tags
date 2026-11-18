@@ -1,0 +1,167 @@
+[
+ {
+  "key": "african-violet",
+  "name": "African violet",
+  "match": "african violet|saintpaulia|streptocarpus"
+ },
+ {
+  "key": "alocasia",
+  "name": "Alocasia",
+  "match": "alocasia|elephant ear|colocasia|african mask|amazonica"
+ },
+ {
+  "key": "aloe",
+  "name": "Aloe vera",
+  "match": "aloe vera|aloe|barbadensis"
+ },
+ {
+  "key": "anthurium",
+  "name": "Anthurium",
+  "match": "anthurium|flamingo flower|laceleaf|tail flower"
+ },
+ {
+  "key": "basil",
+  "name": "Basil",
+  "match": "basil|ocimum|mint|mentha|oregano|origanum|herbs?\\b"
+ },
+ {
+  "key": "begonia",
+  "name": "Begonia",
+  "match": "begonia"
+ },
+ {
+  "key": "bird-of-paradise",
+  "name": "Bird of paradise",
+  "match": "bird.of.paradise|strelitzia|nicolai|reginae"
+ },
+ {
+  "key": "cactus",
+  "name": "Cactus",
+  "match": "cact(us|i)|saguaro|opuntia|prickly pear|mammillaria|echinocactus|cereus"
+ },
+ {
+  "key": "calathea",
+  "name": "Calathea",
+  "match": "calathea|goeppertia|maranta|prayer plant|ctenanthe|stromanthe|rattlesnake plant|peacock plant"
+ },
+ {
+  "key": "croton",
+  "name": "Croton",
+  "match": "croton|codiaeum|joseph.s coat"
+ },
+ {
+  "key": "dracaena",
+  "name": "Dracaena",
+  "match": "dracaena|dragon tree|marginata|corn plant|fragrans|massangeana"
+ },
+ {
+  "key": "echeveria",
+  "name": "Echeveria",
+  "match": "echeveria|hens? and chicks|sempervivum|graptopetalum|graptoveria|succulents?"
+ },
+ {
+  "key": "english-ivy",
+  "name": "English ivy",
+  "match": "english ivy|common ivy|hedera|ivy"
+ },
+ {
+  "key": "fern",
+  "name": "Fern",
+  "match": "fern|nephrolepis|asplenium|davallia|pteris|adiantum|maidenhair"
+ },
+ {
+  "key": "fiddle-leaf-fig",
+  "name": "Fiddle-leaf fig",
+  "match": "fiddle.?leaf|ficus lyrata|lyrata"
+ },
+ {
+  "key": "hoya",
+  "name": "Hoya",
+  "match": "hoya|wax plant|wax flower|porcelain flower"
+ },
+ {
+  "key": "jade-plant",
+  "name": "Jade plant",
+  "match": "jade plant|jade tree|jade|crassula"
+ },
+ {
+  "key": "money-tree",
+  "name": "Money tree",
+  "match": "money tree|pachira|guiana chestnut|malabar chestnut"
+ },
+ {
+  "key": "monstera",
+  "name": "Monstera",
+  "match": "monstera|swiss cheese"
+ },
+ {
+  "key": "orchid",
+  "name": "Orchid",
+  "match": "orchid|phalaenopsis|dendrobium|cymbidium|oncidium"
+ },
+ {
+  "key": "parlor-palm",
+  "name": "Parlour palm",
+  "match": "parlou?r palm|chamaedorea|areca|dypsis|kentia|howea|\\bpalms?\\b"
+ },
+ {
+  "key": "peace-lily",
+  "name": "Peace lily",
+  "match": "peace lily|spathiphyllum"
+ },
+ {
+  "key": "peperomia",
+  "name": "Peperomia",
+  "match": "peperomia|baby rubber|radiator plant|caperata"
+ },
+ {
+  "key": "philodendron",
+  "name": "Philodendron",
+  "match": "philodendron|birkin|hederaceum|heart.?leaf"
+ },
+ {
+  "key": "pilea",
+  "name": "Pilea",
+  "match": "pilea|chinese money|peperomioides|pancake plant|ufo plant|missionary plant"
+ },
+ {
+  "key": "ponytail-palm",
+  "name": "Ponytail palm",
+  "match": "ponytail palm|pony.?tail|beaucarnea|nolina|elephant.s foot"
+ },
+ {
+  "key": "pothos",
+  "name": "Pothos",
+  "match": "pothos|epipremnum|scindapsus|devil.?s ivy"
+ },
+ {
+  "key": "rubber-plant",
+  "name": "Rubber plant",
+  "match": "rubber plant|rubber tree|ficus elastica|elastica"
+ },
+ {
+  "key": "snake-plant",
+  "name": "Snake plant",
+  "match": "snake plant|sansevieria|trifasciata|mother.in.law"
+ },
+ {
+  "key": "spider-plant",
+  "name": "Spider plant",
+  "match": "spider plant|chlorophytum|comosum|airplane plant|ribbon plant"
+ },
+ {
+  "key": "string-of-pearls",
+  "name": "String of pearls",
+  "match": "string.of.pearls|string.of.beads|rowleyanus|senecio|curio"
+ },
+ {
+  "key": "tradescantia",
+  "name": "Tradescantia",
+  "match": "tradescantia|wandering (dude|jew)|inch plant|spiderwort"
+ },
+ {
+  "key": "zz-plant",
+  "name": "ZZ plant",
+  "match": "zz plant|zamioculcas|zanzibar|zz\\b"
+ }
+]

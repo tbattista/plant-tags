@@ -2,7 +2,8 @@
 
 3D-printed NFC plant tags: a black holder that goes in the pot (a tall stake,
 a short stake, or flat on the soil) and a 30 mm four-colour button with the
-plant drawn on it, which presses in over a 25 mm NFC sticker.
+plant drawn on it, which presses in over a 25 mm NFC sticker. There's also a
+clip-on holder for a branch, held by a springy U clip (S, M or L).
 
 This repo is both:
 

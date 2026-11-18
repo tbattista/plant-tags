@@ -6,7 +6,7 @@
 import sharp from 'sharp';
 import { TagError } from './errors.js';
 import { PALETTE, HOLDER_FILAMENT } from './palette.js';
-import { buildButton, buildHolder, buildFitTest, HOLDER_STYLES, HOLDER_ICONS } from './geometry.js';
+import { TAG, buildButton, buildHolder, buildClip, buildFitTest, HOLDER_STYLES, HOLDER_ICONS } from './geometry.js';
 import { threeMf, stl, zip } from './files.js';
 
 /** PNG of the button exactly as it will print, in its black cup. */
@@ -40,7 +40,7 @@ const PLATE_CENTRE = [110, 110];
 
 export const IMPORT_HINT = 'In Creality Print use File → Import → Import 3MF/STL… (Ctrl+I), not Open Project — importing keeps each colour on its own filament.';
 
-const HOLDER_TITLES = { stake: 'stake', short: 'short stake', flat: 'flat, pin down' };
+const HOLDER_TITLES = { stake: 'stake', short: 'short stake', flat: 'flat, pin down', clip: 'clip-on, for a branch' };
 const ICON_TITLES = { under: 'under the cup', back: 'on the back', tab: 'on a tab' };
 
 /**
@@ -58,7 +58,7 @@ function instructions(plantName, parts, wording) {
   const used = new Set(parts.map((x) => x.slot));
   return `Plant tag — ${plantName}
 ${wording.madeBy} Two prints: a black holder (a round cup —
-three styles to choose from) and a 4-colour button with the plant on it. The
+four styles to choose from) and a 4-colour button with the plant on it. The
 25 mm NFC sticker sits in the bottom of the cup and the button presses in over
 it, 0.4 mm below the rim — fill that gap with clear epoxy to seal it.
 
@@ -92,9 +92,12 @@ HOLDER — pick one from holders/, black (${HOLDER_FILAMENT.filament})
                    rim on the plate, pin pointing up — so it needs no supports;
                    the floor of the cup is a short bridge, which the sticker
                    covers. Push it into the soil until the cup sits flat.
+  clip             no spike: an ear with a slot each side of the cup, for a
+                   U clip from clips/ that holds it on a branch or stem.
+                   Prints flat, cup facing up.
   With the "tap here" icon (a hand holding a phone), so people know to tap it:
   …-icon-under     a badge under the cup with the icon raised on the front
-                   (stakes)
+                   (stakes and the clip holder)
   …-icon-back      the icon inlaid in the back of the cup, reading right from
                    behind (stakes)
   …-icon-tab       a small tab off the rim with the icon inlaid in its face
@@ -110,7 +113,16 @@ ASSEMBLE
      three small nubs and sits 0.4 mm below the rim. For good, put a few dots of
      glue on the cup floor first, or fill the gap over the button with clear
      epoxy (it also seals the picture).
-  3. ${wording.writeStep}
+  3. Clip holder only: put the branch in the U of the clip, squeeze the arms in
+     a little, push both hooks up through the ears' slots from behind and let
+     go — the arms spring out and the hooks catch over the front of the ears.
+     Squeeze again to take it off.
+  4. ${wording.writeStep}
+
+CLIP — clips/, one colour (PETG springs best; PLA works but can crack)
+  A springy U that goes round the branch behind the clip holder. It prints flat,
+  ${TAG.clip.height} mm tall, 0.2 mm layers, no supports. Pick the size for the branch:
+${Object.entries(TAG.clip.sizes).map(([k, d]) => `  clip-${k}.3mf     a branch about ${d} mm across (a mm or two either way is fine)`).join('\n')}
 
 FIT
   If the button is too tight or falls out, print the fit test from the tag page
@@ -118,7 +130,8 @@ FIT
 
 FILES
   button.3mf   the button, colours assigned
-  holders/     every holder: stake, short and flat, plain and with the icon
+  holders/     every holder: stake, short, flat and clip, plain and with the icon
+  clips/       the U clips for the clip holder, S, M and L
   stl/         the same as STLs: import all button-*.stl together as ONE object
                with parts, then set each part's filament (likewise a holder
                with its -icon.stl)
@@ -157,6 +170,13 @@ export async function printPackage(svg, { name = 'Plant', wording = {} } = {}) {
     { name: 'preview.png', data: preview },
     { name: 'README.txt', data: instructions(name, button.parts, { ...DEFAULT_WORDING, ...wording }) },
   ];
+  const clips = await Promise.all(Object.keys(TAG.clip.sizes).map((size) => buildClip(size)));
+  for (const c of clips) {
+    files.push(
+      { name: `clips/clip-${c.size}.3mf`, data: threeMf([{ name: `Tag clip ${c.size} (${c.branch} mm branch)`, parts: [{ name: 'Clip (filament 1)', extruder: 1, mesh: c.mesh }], at: PLATE_CENTRE }]) },
+      { name: `stl/clips/clip-${c.size}.stl`, data: stl(c.mesh, `clip ${c.size}`) },
+    );
+  }
   return { filename: `${slug(name)}-tag.zip`, data: zip(files) };
 }
 

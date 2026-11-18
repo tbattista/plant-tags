@@ -51,7 +51,19 @@ export const TAG = {
     // Round, because small square corners don't print cleanly. The bump is a cylinder of
     // this radius whose centre sits `offset` outside the bore, so it stands `radius − offset` proud.
     key: { radius: 1.4, offset: 0.35 },
+    // the clip holder: no spike, an ear each side of the cup (±X) with a slot through it.
+    // A separate springy U clip (buildClip) goes round the branch behind the cup; its
+    // arms come up through the slots and their hooks curl outward over the bridge of
+    // ear outside each slot. The slot is wide (X) so a hook passes when the arms are
+    // squeezed in; let go and the arms spring out, so the hooks rest on the bridges.
+    ears: { inset: 0.4, slot: [6.0, 6.8], bridge: 3.8, length: 12, radius: 3 },
   },
+  // the U clip, printed flat (its outline in the plate's plane, `height` tall): `wire`
+  // is its thickness in that plane, `hook` the centre radius of each hook's curl,
+  // `lift` how far the curl's centre sits above the holder's face. Printed with each arm
+  // `spread` mm further out than where it locks, so the arms always push outward; the
+  // U is `squeeze` mm tighter than the branch it is sized for. Sizes: branch diameters.
+  clip: { wire: 2.0, height: 6.0, hook: 1.6, lift: 1.0, spread: 1.0, squeeze: 0.5, sizes: { S: 8, M: 13, L: 19 } },
   clearance: 0.3, // button diameter + this = cup bore (tune with the fit test)
   layer: 0.2,
   pxPerMm: 20,
@@ -523,9 +535,16 @@ export async function buildButton(svg) {
  * Holder styles: 'stake' (a tall spike), 'short' (a ≈ 1.5″ spike) and 'flat'
  * (the cup lies face-up on the soil with a pin going down from its back).
  */
-export const HOLDER_STYLES = ['stake', 'short', 'flat'];
-/** Where a holder can carry the "tap here" icon. */
-export const HOLDER_ICONS = { stake: ['under', 'back'], short: ['under', 'back'], flat: ['tab'] };
+export const HOLDER_STYLES = ['stake', 'short', 'flat', 'clip'];
+/** Where a holder can carry the "tap here" icon (the clip's back is against the branch). */
+export const HOLDER_ICONS = { stake: ['under', 'back'], short: ['under', 'back'], flat: ['tab'], clip: ['under'] };
+
+/** The clip holder's slots: [x of the inner edge, x of the outer edge] (+X side; mirrored at −X). */
+export function earSlot(clearance = TAG.clearance) {
+  const e = TAG.holder.ears;
+  const inner = (TAG.button.diameter + clearance) / 2 + TAG.holder.wall + e.inset;
+  return [inner, inner + e.slot[0]];
+}
 
 const TAP_SVG = fs.readFileSync(path.join(import.meta.dirname, '..', 'icons', 'tap.svg'), 'utf8');
 
@@ -575,7 +594,7 @@ export async function buildHolder({ clearance = TAG.clearance, stub = null, styl
     const bore = (TAG.button.diameter + clearance) / 2;
     const outer = bore + h.wall;
     let outline = keep(CrossSection.circle(outer, 160));
-    if (style !== 'flat') {
+    if (style === 'stake' || style === 'short') {
       const sp = style === 'short' ? h.short : h.spike;
       const neckEnd = -(outer + sp.neckLen);
       const taperEnd = -(outer + sp.taperLen);
@@ -599,6 +618,17 @@ export async function buildHolder({ clearance = TAG.clearance, stub = null, styl
     const tabY = -(outer + ic.tab.height / 2 - 4);
     if (icon === 'under') outline = keep(outline.add(roundedRect(M, keep, ic.badge.width, ic.badge.height, ic.badge.radius, 0, badgeY)));
     if (icon === 'tab') outline = keep(outline.add(roundedRect(M, keep, ic.tab.width, ic.tab.height, ic.tab.radius, 0, tabY)));
+    if (style === 'clip') {
+      // an ear each side, overlapping the rim, with a slot through it for the clip's arm
+      const e = h.ears;
+      const [s0, s1] = earSlot(clearance);
+      const x0 = outer - 3;
+      const x1 = s1 + e.bridge;
+      for (const side of [-1, 1]) {
+        outline = keep(outline.add(roundedRect(M, keep, x1 - x0, e.length, e.radius, side * (x0 + x1) / 2, 0)));
+      }
+      for (const side of [-1, 1]) outline = keep(outline.subtract(keep(keep(CrossSection.square([s1 - s0, e.slot[1]], true)).translate([side * (s0 + s1) / 2, 0]))));
+    }
     let solid = keep(outline.extrude(T));
     const recessBottom = T - h.recess;
     solid = keep(solid.subtract(keep(keep(Manifold.cylinder(h.recess + 1, bore, bore, 160)).translate([0, 0, recessBottom]))));
@@ -665,6 +695,68 @@ export async function buildHolder({ clearance = TAG.clearance, stub = null, styl
       style,
       icon,
     };
+  } finally {
+    keep.free();
+  }
+}
+
+/** Points along an arc (centre c, radius r, from angle a0 to a1, radians). */
+function arcPts(c, r, a0, a1, step = Math.PI / 24) {
+  const n = Math.max(2, Math.ceil(Math.abs(a1 - a0) / step));
+  return Array.from({ length: n + 1 }, (_, i) => {
+    const a = a0 + ((a1 - a0) * i) / n;
+    return [c[0] + r * Math.cos(a), c[1] + r * Math.sin(a)];
+  });
+}
+
+/**
+ * The centre line of a U clip for a branch `d` mm across, in the clip's own plane:
+ * x across the holder, y = height above the holder's front face (the face is y = 0,
+ * the back y = −T). The branch sits against the back, centred, and the U hugs it.
+ * `spread` moves each arm outward (the as-printed, relaxed shape).
+ */
+export function clipLine(d, { spread = 0, clearance = TAG.clearance } = {}) {
+  const c = TAG.clip;
+  const T = holderThickness();
+  const a = earSlot(clearance)[1] - c.wire / 2 + spread; // locked: each arm against its slot's outer wall
+  const centre = [0, -T - d / 2];
+  const R = d / 2 - c.squeeze + c.wire / 2;
+  const tangent = (p, side) => {
+    const dx = p[0] - centre[0];
+    const dy = p[1] - centre[1];
+    const ang = Math.atan2(dy, dx) + side * Math.acos(R / Math.hypot(dx, dy));
+    return ang;
+  };
+  const elbow = (x) => [x, -T - c.wire / 2];
+  const aL = tangent(elbow(-a), 1);
+  const aR = tangent(elbow(a), -1);
+  // the hook: up the arm, a half-turn outward, down to the face
+  const hook = (x, side) => arcPts([x + side * c.hook, c.lift], c.hook, side > 0 ? Math.PI : 0, side > 0 ? 0 : Math.PI);
+  const left = [[-a - 2 * c.hook, 0], ...hook(-a, -1).reverse()];
+  let lo = aL;
+  let hi = aR;
+  while (hi < lo) hi += 2 * Math.PI;
+  return [...left.slice(0, -1), [-a, c.lift], elbow(-a), ...arcPts(centre, R, lo, hi), elbow(a), [a, c.lift], ...hook(a, 1).slice(1), [a + 2 * c.hook, 0]];
+}
+
+/** A U clip (size 'S' | 'M' | 'L'), printed flat as relaxed — arms spread — centred on the origin. */
+export async function buildClip(size = 'M') {
+  const d = TAG.clip.sizes[size];
+  if (!d) throw new Error(`Unknown clip size ${size}`);
+  const M = await wasm();
+  const keep = arena();
+  try {
+    const { CrossSection } = M;
+    const w = TAG.clip.wire;
+    const pts = clipLine(d, { spread: TAG.clip.spread });
+    // a round-ended stroke: the hull of each pair of neighbouring dots, all joined
+    const dot = (p) => keep(keep(CrossSection.circle(w / 2, 24)).translate(p));
+    const capsules = [];
+    for (let i = 1; i < pts.length; i++) capsules.push(keep(CrossSection.hull([dot(pts[i - 1]), dot(pts[i])])));
+    const outline = keep(CrossSection.union(capsules));
+    const bb = outline.bounds();
+    const solid = checked(keep(keep(outline.extrude(TAG.clip.height)).translate([-(bb.min[0] + bb.max[0]) / 2, -(bb.min[1] + bb.max[1]) / 2, 0])), `Clip ${size}`);
+    return { size, branch: d, mesh: meshOf(solid), volume: solid.volume(), width: bb.max[0] - bb.min[0], depth: bb.max[1] - bb.min[1] };
   } finally {
     keep.free();
   }

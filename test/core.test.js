@@ -5,7 +5,7 @@ import path from 'node:path';
 import sharp from 'sharp';
 import { unzip, assertClosed, inside, maxZ } from './helpers.js';
 import { cleanSvg, SAMPLES, sampleSvg, sampleFor } from '../src/art.js';
-import { buildButton, buildHolder, holderThickness, epoxyGap, quantize, fitToButton, removeThin, keyCentre, NOTCH_PLAY, TAG } from '../src/geometry.js';
+import { buildButton, buildHolder, buildClip, clipLine, earSlot, holderThickness, epoxyGap, quantize, fitToButton, removeThin, keyCentre, NOTCH_PLAY, TAG } from '../src/geometry.js';
 import { threeMf, zip } from '../src/files.js';
 import { PALETTE } from '../src/palette.js';
 
@@ -117,6 +117,55 @@ describe('holder styles', () => {
     const tab = await buildHolder({ style: 'flat', icon: 'tab' });
     assert.ok(tab.iconVolume > 20 && Math.min(...zs(tab.iconMesh)) >= -1e-3 && Math.max(...zs(tab.iconMesh)) <= TAG.holder.icon.tab.depth + 1e-3, 'the tab’s inlay is on the plate too');
     await assert.rejects(buildHolder({ style: 'flat', icon: 'back' }), /can't have/);
+  });
+});
+
+describe('the clip holder and its U clips', () => {
+  it('the clip holder has no spike, and a slotted ear each side of the cup', async () => {
+    const h = await buildHolder({ style: 'clip' });
+    assertClosed(h.mesh, 'clip holder');
+    const T = holderThickness();
+    const outer = h.bore + TAG.holder.wall;
+    assert.ok(Math.abs(h.length - 2 * outer) < 0.2, `no spike: ${h.length.toFixed(1)} mm long`);
+    const [s0, s1] = earSlot();
+    const e = TAG.holder.ears;
+    const p = (x, y, z) => inside(h.mesh, [x + 0.013, y + 0.017, z]);
+    for (const side of [-1, 1]) {
+      assert.ok(!p(side * (s0 + s1) / 2, 0, T / 2), 'a slot through the ear');
+      assert.ok(!p(side * (s0 + s1) / 2, e.slot[1] / 2 - 0.2, T / 2), 'the slot is long enough for the clip');
+      assert.ok(p(side * (s1 + e.bridge / 2), 0, T / 2), 'a bridge of ear outside the slot, for the hook');
+      assert.ok(p(side * (s0 - 0.2), 0, T / 2), 'the cup wall is whole inside the slot');
+    }
+    const icon = await buildHolder({ style: 'clip', icon: 'under' });
+    assert.ok(icon.iconVolume > 20, 'the badge icon fits under the clip holder too');
+    await assert.rejects(buildHolder({ style: 'clip', icon: 'back' }), /can't have/, 'its back is against the branch');
+  });
+  it('each U clip hooks over the bridges when locked, squeezes through the slots, and hugs its branch against the cup', async () => {
+    const T = holderThickness();
+    const [s0, s1] = earSlot();
+    const c = TAG.clip;
+    for (const [size, d] of Object.entries(c.sizes)) {
+      const clip = await buildClip(size);
+      assertClosed(clip.mesh, `clip ${size}`);
+      const z = clip.mesh.vertices.filter((_, i) => i % 3 === 2);
+      assert.ok(Math.abs(Math.max(...z) - c.height) < 1e-4 && Math.abs(Math.min(...z)) < 1e-4, 'printed flat, its height along the branch');
+      assert.ok(c.height < TAG.holder.ears.slot[1], 'fits the slot lengthways');
+      const line = clipLine(d);
+      const tipR = line.at(-1);
+      // locked: each hook's tip rests on the bridge of ear outside the slot
+      assert.ok(Math.abs(tipR[1]) < 1e-9 && tipR[0] - c.wire / 2 > s1 && tipR[0] + c.wire / 2 < s1 + TAG.holder.ears.bridge, `${size}: hook tip on the bridge`);
+      const arm = line.filter(([, y]) => y > -T && y < 0).map(([x]) => x).filter((x) => x > 0);
+      assert.ok(arm.every((x) => x + c.wire / 2 <= s1 + 1e-9 && x - c.wire / 2 >= s0), `${size}: the arm is in the slot`);
+      // squeezed in, the whole hook fits through the slot
+      const hookWidth = 2 * c.hook + c.wire;
+      assert.ok(hookWidth < s1 - s0, 'the hook passes the slot');
+      // the U's inside reaches the far side of the branch, a little tight
+      const low = Math.min(...line.map(([, y]) => y)) + c.wire / 2;
+      assert.ok(Math.abs(-low - (T + d - c.squeeze)) < 0.05, `${size}: grips a ${d} mm branch`);
+      // printed relaxed: the arms wider than where they lock, so they push outward
+      assert.ok(clip.width > 2 * (tipR[0] + c.wire / 2) + 1.5, `${size}: printed spread`);
+    }
+    await assert.rejects(buildClip('XL'));
   });
 });
 

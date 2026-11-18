@@ -90,7 +90,9 @@ describe('the public tool', () => {
     assert.equal(zip.status, 200);
     assert.match(zip.headers.get('content-disposition'), /kitchen-pothos-tag\.zip/);
     const files = unzip(zip.data);
-    assert.ok(files.has('button.3mf') && files.has('holders/stake.3mf'));
+    assert.ok(files.has('button.3mf') && files.has('holders/stake.3mf') && files.has('holders/clip.3mf'));
+    assert.ok(['S', 'M', 'L'].every((s) => files.has(`clips/clip-${s}.3mf`)), 'the U clips for the clip holder');
+    assert.match(files.get('README.txt').toString(), /CLIP — clips\//);
     assert.match(files.get('README.txt').toString(), /Riverpoint Labs/);
     assert.match(files.get('README.txt').toString(), /any NFC writer app/);
   });

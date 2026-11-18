@@ -4,7 +4,7 @@ This repo is two things, and both are live:
 
 1. **The generator** (`src/`, `samples/`, `icons/`, `thumbs/`, `tools/`) — the
    library the Plants app (`tbattista/plants`) installs as a dependency,
-   pinned to a release tag: `"plant-tags": "github:tbattista/plant-tags#vX.Y.Z"`.
+   pinned to an exact commit: `"plant-tags": "github:tbattista/plant-tags#<sha>"`.
 2. **The public Plant Tag Maker** (`server/`) — its own Railway service,
    linked from riverpointlabs.co/tools/.
 
@@ -13,9 +13,11 @@ This repo is two things, and both are live:
 1. `npm test` — must pass. Never ship red.
 2. Commit on `main` and push (Railway redeploys the public tool).
 3. If the generator changed (anything outside `server/`): bump `version` in
-   `package.json`, tag it `vX.Y.Z` and push the tag. Then, in the Plants repo,
-   change its `plant-tags` dependency to the new tag, run its tests, and ship
-   Plants as its CLAUDE.md says. Both sites then have the change.
+   `package.json` before committing. Then, in the Plants repo, point its
+   `plant-tags` dependency at the new commit (`npm install
+   github:tbattista/plant-tags#<sha>`), run its tests, and ship Plants as its
+   CLAUDE.md says. Both sites then have the change. (A release tag works too,
+   but cloud sessions can't push tags; a commit pin is just as exact.)
 
 ## Rules
 

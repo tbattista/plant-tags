@@ -83,8 +83,9 @@ set the AI variables, and give it a domain such as `tags.riverpointlabs.co`.
 ## Shipping
 
 `npm test` (generator + server; no database needed), commit, push `main`
-(redeploys the tool). If anything outside `server/` changed, bump the version,
-tag `vX.Y.Z`, push the tag, and move Plants' `plant-tags` dependency to it.
+(redeploys the tool). If anything outside `server/` changed, bump the version
+and move Plants' `plant-tags` dependency to the new commit
+(`npm install github:tbattista/plant-tags#<sha>` in Plants).
 
 ## Credits
 
